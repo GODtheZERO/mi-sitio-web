@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control de LED</title>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-database.js"></script>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .led-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #led-on {
+            background-color: #2ecc71;  /* Color verde para indicar encendido */
+            color: #fff;
+        }
+
+        #led-off {
+            background-color: #070101;  /* Color original */
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Control de LED</h1>
+    <p>Estado del LED: <span id="led-status">Cargando...</span></p>
+    <button id="led-on" class="led-button" onclick="turnOnLED()">Encender</button>
+    <button id="led-off" class="led-button" onclick="turnOffLED()">Apagar</button>
+
+    <script>
+        // Configura la información de Firebase
+        var firebaseConfig = {
+            apiKey: "AIzaSyANuqprtOgLCPbLbhd6aLUfMvLrY0U8izo",
+          authDomain: "prueba-2f66c.firebaseapp.com",
+          databaseURL: "https://prueba-2f66c-default-rtdb.firebaseio.com",
+          projectId: "prueba-2f66c",
+          storageBucket: "prueba-2f66c.appspot.com",
+          messagingSenderId: "135925968722",
+          appId: "1:135925968722:web:8c3ab2e3ddd840bc17548b",
+          measurementId: "G-QC1SCXVXC4"
+        };
+
+        // Inicializa Firebase con la configuración
+        firebase.initializeApp(firebaseConfig);
+
+        // Referencia a la base de datos en tiempo real de Firebase
+        var database = firebase.database();
+        var mensajesRef = database.ref("mensajes");
+
+        mensajesRef.on("value", function(snapshot) {
+            var estado = snapshot.val();
+            if (estado === "Encendido") {
+                isLEDOn = true;
+            } else {
+                isLEDOn = false;
+            }
+            updateLEDStatus();
+        });
+
+        let isLEDOn = false;
+
+        function turnOnLED() {
+            isLEDOn = true;
+            updateLEDStatus();
+            mensajesRef.set("Encendido");
+        }
+
+        function turnOffLED() {
+            isLEDOn = false;
+            updateLEDStatus();
+            mensajesRef.set("Apagado");
+        }
+
+        function updateLEDStatus() {
+            const ledStatus = document.getElementById('led-status');
+            const ledOnButton = document.getElementById('led-on');
+            const ledOffButton = document.getElementById('led-off');
+
+            if (isLEDOn) {
+                ledStatus.innerText = 'Encendido';
+                ledOnButton.style.backgroundColor = '#2ecc71';
+                ledOffButton.style.backgroundColor = '#070101';
+            } else {
+                ledStatus.innerText = 'Apagado';
+                ledOnButton.style.backgroundColor = '#070101';
+                ledOffButton.style.backgroundColor = '#2ecc71';
+            }
+        }
+    </script>
+</body>
+</html>
